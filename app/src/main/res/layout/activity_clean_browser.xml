@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F172A"
+    android:orientation="vertical">
+
+    <!-- 頂部網址工具列 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="#1E293B"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp">
+
+        <ImageButton
+            android:id="@+id/btnBackHome"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="返回主畫面"
+            android:src="@android:drawable/ic_menu_revert" />
+
+        <EditText
+            android:id="@+id/etUrl"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_marginHorizontal="6dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_card_dark"
+            android:hint="輸入網址或關鍵字搜尋..."
+            android:imeOptions="actionGo"
+            android:inputType="textUri"
+            android:paddingHorizontal="12dp"
+            android:singleLine="true"
+            android:textColor="#F8FAFC"
+            android:textColorHint="#94A3B8"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/btnReload"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="重新整理"
+            android:src="@android:drawable/ic_popup_sync" />
+    </LinearLayout>
+
+    <!-- 統計狀態列 -->
+    <TextView
+        android:id="@+id/tvPageBlockedCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#064E3B"
+        android:gravity="center"
+        android:paddingVertical="3dp"
+        android:text="🛡️ 極淨 DOM 隱形防護中｜本頁已消滅 0 個廣告"
+        android:textColor="#A7F3D0"
+        android:textSize="12sp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:max="100"
+        android:visibility="gone" />
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>

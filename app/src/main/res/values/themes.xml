@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PureShield" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#10B981</item>
+        <item name="colorPrimaryVariant">#059669</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:navigationBarColor">#0F172A</item>
+        <item name="android:textColorPrimary">#F8FAFC</item>
+    </style>
+</resources>
