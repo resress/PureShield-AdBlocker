@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1E293B"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="10dp">
+
+    <!-- 第一行：攔截狀態徽章 + 查詢類型 + 時間與詳情提示 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvLogStatusBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#DC2626"
+            android:paddingHorizontal="7dp"
+            android:paddingVertical="2dp"
+            android:text="🚫 已擋廣告"
+            android:textColor="#FFFFFF"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvLogQType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="#334155"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="IPv4 (A)"
+            android:textColor="#38BDF8"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tvLogTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00:00 · 點擊詳情 ❯"
+            android:textColor="#94A3B8"
+            android:textSize="11.5sp" />
+    </LinearLayout>
+
+    <!-- 第二行：完整網域名稱（不截斷，支援自動換行顯示完整網址） -->
+    <TextView
+        android:id="@+id/tvLogDomain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:breakStrategy="simple"
+        android:text="pagead2.googlesyndication.com"
+        android:textColor="#F8FAFC"
+        android:textSize="14.5sp"
+        android:textStyle="bold" />
+
+    <!-- 第三行：命中規則與處理詳細原因 -->
+    <TextView
+        android:id="@+id/tvLogReason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:text="📌 命中廣告規則庫 (*.googlesyndication.com) → 0ms 本地阻斷"
+        android:textColor="#CBD5E1"
+        android:textSize="12sp" />
+
+</LinearLayout>

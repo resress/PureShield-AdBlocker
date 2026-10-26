@@ -4,232 +4,314 @@
     android:layout_height="match_parent"
     android:background="#0F172A"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="12dp">
 
-    <!-- 頂部標題與狀態卡片 -->
+    <!-- 可一鍵收合的頂部控制面板區 (預設顯示，點「全螢幕日誌」可收合讓日誌佔滿全畫面) -->
+    <LinearLayout
+        android:id="@+id/topDashboardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- 頂部標題與狀態卡片（緊湊高資訊密度設計） -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_dark"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PureShield 淨盾擋廣告"
+                        android:textColor="#F8FAFC"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvStatusBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="⚪ 系統級 DNS 防護：未啟動"
+                        android:textColor="#9CA3AF"
+                        android:textSize="13.5sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnToggleVpn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:backgroundTint="#10B981"
+                    android:paddingHorizontal="14dp"
+                    android:text="啟動防護"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvStatusSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="點擊右側按鈕即可啟動本機防護，不耗電且不降速"
+                android:textColor="#94A3B8"
+                android:textSize="11.5sp" />
+
+            <!-- 統計數據與規則數整合列 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#0F172A"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="6dp"
+                android:weightSum="3">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvSessionBlocked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#38BDF8"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="本次攔截"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTotalBlocked"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#A78BFA"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="累計攔截"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvRulesCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#34D399"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="生效根網域"
+                        android:textColor="#94A3B8"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLastUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="規則庫狀態：內建精選規則庫"
+                android:textColor="#64748B"
+                android:textSize="11sp" />
+
+            <!-- 四大功能按鈕列 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <Button
+                    android:id="@+id/btnUpdateCloud"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#2563EB"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="2dp"
+                    android:text="雲端更新"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11.5sp" />
+
+                <Button
+                    android:id="@+id/btnCustomRules"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#475569"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="2dp"
+                    android:text="黑白名單"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11.5sp" />
+
+                <Button
+                    android:id="@+id/btnChromeGuide"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginHorizontal="3dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#D97706"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="2dp"
+                    android:text="Chrome設定"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11.5sp" />
+
+                <Button
+                    android:id="@+id/btnOpenCleanBrowser"
+                    android:layout_width="0dp"
+                    android:layout_height="38dp"
+                    android:layout_marginStart="3dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#7C3AED"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="2dp"
+                    android:text="極淨瀏覽"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11.5sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- 即時網域監控日誌標題與篩選控制列 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_card_dark"
-        android:orientation="vertical"
-        android:padding="18dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tvLogSectionTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="PureShield 淨盾擋廣告"
+            android:layout_weight="1"
+            android:text="📡 即時網域監控日誌 (點項目看詳情)"
             android:textColor="#F8FAFC"
-            android:textSize="22sp"
+            android:textSize="13sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvStatusBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="⚪ 系統級 DNS 廣告防護：未啟動"
-            android:textColor="#9CA3AF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvStatusSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="點擊下方按鈕即可啟動本機防護，不耗電且不影響一般網速"
-            android:textColor="#94A3B8"
-            android:textSize="13sp" />
 
         <Button
-            android:id="@+id/btnToggleVpn"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="14dp"
-            android:backgroundTint="#10B981"
-            android:text="立即啟動廣告攔截"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- 統計資訊雙欄卡片 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal"
-        android:weightSum="2">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_card_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/tvSessionBlocked"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#38BDF8"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="本次已攔截廣告"
-                android:textColor="#94A3B8"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_card_dark"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <TextView
-                android:id="@+id/tvTotalBlocked"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#A78BFA"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="累計總攔截數"
-                android:textColor="#94A3B8"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- 規則庫與操作按鈕區 -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_card_dark"
-        android:orientation="vertical"
-        android:padding="14dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="生效過濾規則："
-                android:textColor="#CBD5E1"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/tvRulesCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 筆"
-                android:textColor="#34D399"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvLastUpdate"
+            android:id="@+id/btnFilterBlocked"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="規則庫狀態：內建精選規則庫"
-            android:textColor="#64748B"
-            android:textSize="12sp" />
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#334155"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="0dp"
+            android:text="全部顯示"
+            android:textColor="#E2E8F0"
+            android:textSize="11sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
+        <Button
+            android:id="@+id/btnPauseLog"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#334155"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="0dp"
+            android:text="⏸️ 暫停"
+            android:textColor="#E2E8F0"
+            android:textSize="11sp" />
 
-            <Button
-                android:id="@+id/btnUpdateCloud"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#2563EB"
-                android:text="雲端擴充規則庫"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnCustomRules"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#475569"
-                android:text="自訂黑白名單"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <Button
-                android:id="@+id/btnChromeGuide"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginEnd="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#D97706"
-                android:text="Chrome 必看設定"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/btnOpenCleanBrowser"
-                android:layout_width="0dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="4dp"
-                android:layout_weight="1"
-                android:backgroundTint="#7C3AED"
-                android:text="開啟極淨瀏覽器"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/btnExpandLog"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:backgroundTint="#0284C7"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="0dp"
+            android:text="🔍 全螢幕"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp" />
     </LinearLayout>
 
-    <!-- 即時攔截與 DNS 查詢日誌 -->
+    <!-- 當尚無紀錄時的友善提示區 -->
     <TextView
+        android:id="@+id/tvEmptyLogHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="6dp"
-        android:text="📡 即時網域監控日誌（點擊任一網址可加入黑白名單）："
-        android:textColor="#E2E8F0"
+        android:background="@drawable/bg_card_dark"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="目前尚無網域紀錄。\n請先點擊上方「啟動防護」，接著打開手機瀏覽器瀏覽網頁，這裡就會即時列出每一筆網域與攔截詳細原因！"
+        android:textColor="#94A3B8"
         android:textSize="13sp"
-        android:textStyle="bold" />
+        android:visibility="visible" />
 
+    <!-- 詳細三行式日誌 ListView -->
     <ListView
         android:id="@+id/lvDnsLogs"
         android:layout_width="match_parent"
@@ -238,6 +320,7 @@
         android:background="@drawable/bg_card_dark"
         android:divider="#334155"
         android:dividerHeight="1dp"
-        android:padding="4dp" />
+        android:padding="4dp"
+        android:visibility="gone" />
 
 </LinearLayout>

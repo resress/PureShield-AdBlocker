@@ -128,8 +128,14 @@ class AdBlockVpnService : VpnService() {
                 val parsed = DnsPacketHelper.parseDnsQuery(packetCopy, length) ?: continue
 
                 val domain = parsed.domain
-                val blocked = BlocklistManager.shouldBlock(domain)
-                BlocklistManager.recordQuery(applicationContext, domain, blocked)
+                val checkResult = BlocklistManager.checkDomain(domain)
+                val blocked = checkResult.blocked
+                BlocklistManager.recordQuery(
+                    applicationContext,
+                    domain,
+                    parsed.qType,
+                    checkResult
+                )
 
                 if (blocked) {
                     val blockedResponse = DnsPacketHelper.buildBlockedDnsResponse(packetCopy, parsed)

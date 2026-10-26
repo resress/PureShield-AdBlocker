@@ -159,9 +159,10 @@ class CleanBrowserActivity : AppCompatActivity() {
                 request: WebResourceRequest?
             ): WebResourceResponse? {
                 val host = request?.url?.host ?: return super.shouldInterceptRequest(view, request)
-                if (BlocklistManager.shouldBlock(host)) {
+                val checkResult = BlocklistManager.checkDomain(host)
+                if (checkResult.blocked) {
                     pageBlocked++
-                    BlocklistManager.recordQuery(applicationContext, host, true)
+                    BlocklistManager.recordQuery(applicationContext, host, 0, checkResult)
                     runOnUiThread { updateBadge() }
                     return WebResourceResponse(
                         "text/plain",

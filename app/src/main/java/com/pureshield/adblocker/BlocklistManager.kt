@@ -14,11 +14,8 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
-/**
- * 負責管理廣告網域黑名單、自訂黑白名單、雲端更新規則庫，以及即時攔截紀錄統計。
- * 支援根網域與子網域自動階層比對（例如封鎖 doubleclick.net 即自動封鎖 *.doubleclick.net）。
- */
 object BlocklistManager {
 
     private const val PREFS_NAME = "pureshield_prefs"
@@ -28,11 +25,23 @@ object BlocklistManager {
     private const val KEY_LAST_UPDATE = "last_cloud_update"
     private const val CLOUD_CACHE_FILE = "cloud_hosts_cache.txt"
 
+    data class CheckResult(
+        val blocked: Boolean,
+        val matchedRule: String,
+        val reasonDetail: String
+    )
+
     data class DnsLogItem(
+        val id: Long,
         val time: String,
         val domain: String,
-        val blocked: Boolean
+        val qTypeStr: String,
+        val blocked: Boolean,
+        val matchedRule: String,
+        val reasonDetail: String
     )
+
+    private val logIdGenerator = AtomicLong(1)
 
     private val blockedDomains = ConcurrentHashMap.newKeySet<String>()
     private val userBlacklist = ConcurrentHashMap.newKeySet<String>()
@@ -208,65 +217,134 @@ object BlocklistManager {
         }
     }
 
-    fun shouldBlock(domainRaw: String): Boolean {
+    fun checkDomain(domainRaw: String): CheckResult {
         val domain = domainRaw.lowercase(Locale.ROOT).trimEnd('.')
-        if (domain.isEmpty()) return false
-
-        if (matchesDomainSet(domain, userWhitelist)) {
-            return false
+        if (domain.isEmpty()) {
+            return CheckResult(false, "無", "空白網域")
         }
 
-        if (matchesDomainSet(domain, userBlacklist)) {
-            return true
+        findMatchedRule(domain, userWhitelist)?.let { rule ->
+            return CheckResult(
+                blocked = false,
+                matchedRule = rule,
+                reasonDetail = "命中自訂白名單 (*.$rule) → 強制放行"
+            )
         }
 
-        if (matchesDomainSet(domain, blockedDomains)) {
-            return true
+        findMatchedRule(domain, userBlacklist)?.let { rule ->
+            return CheckResult(
+                blocked = true,
+                matchedRule = rule,
+                reasonDetail = "命中自訂黑名單 ($rule) → 本地 NXDOMAIN 阻斷"
+            )
+        }
+
+        findMatchedRule(domain, blockedDomains)?.let { rule ->
+            return CheckResult(
+                blocked = true,
+                matchedRule = rule,
+                reasonDetail = "命中廣告規則庫 (*.$rule) → 0ms 本地阻斷"
+            )
         }
 
         for (prefix in AD_SUBDOMAIN_PREFIXES) {
             if (domain.startsWith(prefix)) {
-                return true
+                return CheckResult(
+                    blocked = true,
+                    matchedRule = "$prefix*",
+                    reasonDetail = "命中廣告特徵前綴 ($prefix*) → 0ms 本地阻斷"
+                )
             }
         }
 
-        return false
+        return CheckResult(
+            blocked = false,
+            matchedRule = "正常網域",
+            reasonDetail = "未命中廣告規則 → 正常轉發至 1.1.1.1"
+        )
     }
 
-    private fun matchesDomainSet(domain: String, set: Set<String>): Boolean {
-        if (set.contains(domain)) return true
+    fun shouldBlock(domainRaw: String): Boolean = checkDomain(domainRaw).blocked
+
+    private fun findMatchedRule(domain: String, set: Set<String>): String? {
+        if (set.contains(domain)) return domain
         var current = domain
         while (true) {
             val dotIndex = current.indexOf('.')
             if (dotIndex < 0) break
             current = current.substring(dotIndex + 1)
-            if (set.contains(current)) return true
+            if (set.contains(current)) return current
         }
-        return false
+        return null
     }
 
-    fun recordQuery(context: Context, domain: String, blocked: Boolean) {
+    fun formatQType(qType: Int): String {
+        return when (qType) {
+            1 -> "IPv4 (A)"
+            28 -> "IPv6 (AAAA)"
+            5 -> "CNAME"
+            65 -> "HTTPS (SVCB)"
+            16 -> "TXT"
+            else -> "TYPE-$qType"
+        }
+    }
+
+    fun extractRootDomain(domain: String): String {
+        val parts = domain.split('.')
+        if (parts.size <= 2) return domain
+        val twoPartTlds = setOf("com.tw", "org.tw", "net.tw", "edu.tw", "gov.tw", "co.uk", "co.jp")
+        val lastTwo = "${parts[parts.size - 2]}.${parts.last()}"
+        return if (twoPartTlds.contains(lastTwo) && parts.size >= 3) {
+            "${parts[parts.size - 3]}.$lastTwo"
+        } else {
+            lastTwo
+        }
+    }
+
+    fun recordQuery(
+        context: Context,
+        domain: String,
+        qType: Int = 1,
+        checkResult: CheckResult? = null
+    ) {
+        val result = checkResult ?: checkDomain(domain)
         val timeStr = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
-        val item = DnsLogItem(timeStr, domain, blocked)
+        val qTypeStr = if (qType == 0) "WEB-DOM" else formatQType(qType)
 
         val first = recentLogs.firstOrNull()
-        if (first == null || first.domain != domain || first.blocked != blocked) {
-            recentLogs.add(0, item)
-            while (recentLogs.size > 80) {
-                recentLogs.removeAt(recentLogs.size - 1)
-            }
+        if (first != null && first.domain == domain && first.blocked == result.blocked && first.time == timeStr) {
+            return
         }
 
-        if (blocked) {
+        val item = DnsLogItem(
+            id = logIdGenerator.incrementAndGet(),
+            time = timeStr,
+            domain = domain,
+            qTypeStr = qTypeStr,
+            blocked = result.blocked,
+            matchedRule = result.matchedRule,
+            reasonDetail = result.reasonDetail
+        )
+
+        recentLogs.add(0, item)
+        while (recentLogs.size > 150) {
+            recentLogs.removeAt(recentLogs.size - 1)
+        }
+
+        if (result.blocked) {
             sessionBlockedCount.incrementAndGet()
             val total = totalBlockedCount.incrementAndGet()
-            if (total % 10 == 0) {
+            if (total % 5 == 0) {
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                     .edit()
                     .putInt(KEY_TOTAL_BLOCKED, total)
                     .apply()
             }
         }
+    }
+
+    fun clearLogs() {
+        recentLogs.clear()
     }
 
     fun addUserBlacklist(context: Context, domainRaw: String) {
@@ -298,7 +376,7 @@ object BlocklistManager {
 
     fun getLastUpdateTime(context: Context): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_LAST_UPDATE, "內建精選規則庫 (尚未雲端擴充)") ?: "內建精選規則庫"
+        return prefs.getString(KEY_LAST_UPDATE, "內建精選規則庫 (可點上方按鈕擴充)") ?: "內建精選規則庫"
     }
 
     private fun saveUserSets(context: Context) {
@@ -331,7 +409,7 @@ object BlocklistManager {
                     connectTimeout = 10000
                     readTimeout = 15000
                     requestMethod = "GET"
-                    setRequestProperty("User-Agent", "PureShield-Android-AdBlocker/1.0")
+                    setRequestProperty("User-Agent", "PureShield-Android-AdBlocker/1.1")
                 }
                 if (conn.responseCode == 200) {
                     BufferedReader(InputStreamReader(conn.inputStream)).use { reader ->

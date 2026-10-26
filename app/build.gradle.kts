@@ -11,8 +11,8 @@ android {
         applicationId = "com.pureshield.adblocker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     buildTypes {
@@ -22,7 +22,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // 自用版將 release 也使用 debug 簽章，方便直接下載安裝
             signingConfig = signingConfigs.getByName("debug")
         }
     }
